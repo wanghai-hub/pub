@@ -1,0 +1,153 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index"
+		},
+		{
+			"path": "pages/course/list"
+		},
+		{
+			"path": "pages/coursedetail/detail"
+		},
+		{
+			"path": "pages/login/login"
+		}, {
+			"path": "pages/news/news",
+			"style": {}
+		},
+		{
+			"path": "pages/coursedetail/livevideo",
+			"style": {}
+		}, {
+			"path": "pages/my/my",
+			"style": {}
+		},
+		{
+			"path": "pages/auth/auth",
+			"style": {}
+		},
+		{
+			"path": "pages/auth/reauth",
+			"style": {}
+		},
+		{
+			"path": "pages/coursedetail/zhibo",
+			"style": {
+				"style": {
+					"navigationBarTitleText": "新手指南",
+					"backgroundColor": "#ebebeb;",
+					"backgroundColorBottom": "#ebebeb;",
+					"backgroundColorTop": "#ebebeb;",
+					"app-plus": {
+						"bounce": "none",
+						"titleNView": {
+							"titleColor": "#fff",
+							"buttons": [{
+								"float": "left",
+								"text": "返回",
+								"fontSize": "17px",
+								"width": "auto"
+							}]
+						}
+					}
+				}
+			}
+		},
+		{
+			"path": "pages/news/newsdetail",
+			"style": {}
+		},
+		{
+			"path": "pages/news/newsdetailone",
+			"style": {}
+		},
+		{
+			"path": "pages/news/newsdetailtwo",
+			"style": {}
+		},
+		{
+			"path": "pages/news/newsdetailthree",
+			"style": {}
+		},
+		{
+			"path": "pages/news/newsdetailfour",
+			"style": {}
+		},
+		{
+			"path": "pages/news/newsdetailfive",
+			"style": {}
+		},
+		{
+			"path": "pages/news/newsdetailsix",
+			"style": {}
+		},
+		{
+			"path": "pages/news/newsdetailseven",
+			"style": {}
+		},
+		{
+			"path": "pages/news/newsdetaileight",
+			"style": {}
+		},
+		{
+			"path": "pages/news/newsdetailnine",
+			"style": {}
+		},
+		{
+			"path": "pages/news/newsdetailten",
+			"style": {}
+		},
+		{
+			"path": "pages/news/newsdetaileleven",
+			"style": {}
+		},
+		{
+			"path": "pages/news/newsdetailtwelve",
+			"style": {}
+		},
+		{
+			"path": "pages/news/newsdetailthirteen",
+			"style": {}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "新高考",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8",
+		"navigationStyle": "custom"
+	},
+
+
+	"tabBar": {
+		"color": "#435260",
+		"selectedColor": "#ff0000",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [{
+				"pagePath": "pages/index/index",
+				"iconPath": "static/img/nav1.png",
+				"selectedIconPath": "static/img/nav11.png",
+				"text": "首页"
+			}, {
+				"pagePath": "pages/course/list",
+				"iconPath": "static/img/nav2.png",
+				"selectedIconPath": "static/img/nav21.png",
+				"text": "课程"
+			},
+			{
+				"pagePath": "pages/news/news",
+				"iconPath": "static/img/nav3.png",
+				"selectedIconPath": "static/img/nav31.png",
+				"text": "资讯"
+			}, {
+				"pagePath": "pages/my/my",
+				"iconPath": "static/img/nav4.png",
+				"selectedIconPath": "static/img/nav41.png",
+				"text": "我的"
+			}
+		]
+	}
+
+
+}

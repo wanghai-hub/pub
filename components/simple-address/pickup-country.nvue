@@ -1,0 +1,333 @@
+<template>
+	<view class="pickup-country" v-if="showPopup" @touchmove.stop.prevent="clear">
+		<!-- 遮罩层 -->
+		<view class="pickup-country-mask" @touchmove.stop.prevent="clear" v-if="maskClick" :class="[ani+'-mask', animation ? 'mask-ani' : '']" :style="{
+					'background-color': maskBgColor
+				}"
+		 @tap="hideMask(true)"></view>
+
+		<view class="pickup-country-content pickup-country--fixed" :class="[type,ani+'-content', animation ? 'content-ani' : '']">
+			<view class="pickup-country__header">
+				<view class="pickup-country__header-btn-box" @click="pickerCancel">
+					<text class="pickup-country__header-text">取消</text>
+				</view>
+				<view class="pickup-country__header-btn-box" @click="pickerConfirm">
+					<text class="pickup-country__header-text" :style="{color:themeColor}">确定</text>
+				</view>
+			</view>
+			<view class="pickup-country__box">
+				<picker-view indicator-style="height: 70rpx;" class="pickup-country-view" :value="pickerValue" @change="pickerChange">
+
+					<picker-view-column>
+						<!-- #ifndef APP-NVUE -->
+						<view class="picker-item" v-for="(item,index) in countryDataList" :key="index">{{item.label}}</view>
+						<!-- #endif -->
+						<!-- #ifdef APP-NVUE -->
+						<text class="picker-item" v-for="(item,index) in countryDataList" :key="index">{{item.label}}</text>
+						<!-- #endif -->
+					</picker-view-column>
+
+				</picker-view>
+			</view>
+		</view>
+
+	</view>
+</template>
+
+<script>
+	import countryData from './city-data/country.js';
+	export default {
+		name: "pickupCountry",
+		props: {
+			// 开启动画
+			animation: {
+				type: Boolean,
+				default: true
+			},
+			/* 弹出层类型，可选值；
+				bottom：底部弹出层
+			*/
+			type: {
+				type: String,
+				default: 'bottom'
+			},
+			// maskClick
+			maskClick: {
+				type: Boolean,
+				default: true
+			},
+			show: {
+				type: Boolean,
+				default: true
+			},
+			maskBgColor: {
+				type: String,
+				default: 'rgba(0, 0, 0, 0.4)', //背景颜色 rgba(0, 0, 0, 0.4) 为空则调用 uni.scss
+			},
+			themeColor: {
+				type: String,
+				default: '', // 主题色
+			},
+			/* 默认值 */
+			pickerValueDefault: {
+				type: Array,
+				default () {
+					return [0, 0, 0]
+				}
+			},
+			/* 默认值 */
+			selectProv: {
+				type: Number,
+				default () {
+					return 1
+				}
+			},
+		},
+		data() {
+			return {
+				ani: '',
+				showPopup: false,
+				pickerValue: [0, 0, 0],
+				countryDataList: []
+			}
+		},
+		watch: {
+			show(newValue) {
+				if (newValue) {
+					this.open()
+				} else {
+					this.close()
+				}
+			},
+			pickerValueDefault() {
+				this.init();
+			}
+		},
+		created() {
+			this.init()
+		},
+		methods: {
+			init() {
+				this.handPickValueDefault(); // 对 pickerValueDefault 做兼容处理
+				this.countryDataList = countryData;
+				this.pickerValue = this.pickerValueDefault;
+				console.log("this.pickerValue...",this.pickerValueDefault)
+			},
+			handPickValueDefault() {
+				if (this.pickerValueDefault !== [0, 0, 0]) {
+					if(this.selectProv==1){
+						if (this.pickerValueDefault[0] > countryData.length - 1) {
+							this.pickerValueDefault[0] = countryData.length - 1;
+						}
+					}else{
+						if (this.pickerValueDefault[0] > sdData.length - 1) {
+							this.pickerValueDefault[0] = sdData.length - 1;
+						}
+					}
+					
+				}
+			},
+			pickerChange(e) {
+				let changePickerValue = e.detail.value;
+				if (this.pickerValue[0] !== changePickerValue[0]) {
+					changePickerValue[1] = 0;
+					changePickerValue[2] = 0;
+				} else if (this.pickerValue[1] !== changePickerValue[1]) {
+					changePickerValue[2] = 0;
+				}
+				this.pickerValue = changePickerValue;
+				this._$emit('onChange');
+			},
+			_$emit(emitName) {
+				let pickObj = {
+					label: this._getLabel(),
+					value: this.pickerValue,
+					countryCode: this._getCountryCode()
+				};
+				this.$emit(emitName, pickObj);
+			},
+			_getLabel() {
+				return this.countryDataList[this.pickerValue[0]].label;
+			},
+			_getCountryCode() {
+				return this.countryDataList[this.pickerValue[0]].value;
+			},
+			clear() {
+
+			},
+			hideMask() {
+				this._$emit('onCancel');
+				this.close();
+			},
+			pickerCancel() {
+				this._$emit('onCancel');
+				this.close();
+			},
+			pickerConfirm() {
+				this._$emit('onConfirm');
+				this.close();
+			},
+			open() {
+				this.showPopup = true
+				this.$nextTick(() => {
+					setTimeout(() => {
+						this.ani = 'simple-' + this.type
+					}, 100)
+				})
+			},
+			close(type) {
+				if (!this.maskClick && type) return;
+				this.ani = ''
+				this.$nextTick(() => {
+					setTimeout(() => {
+						this.showPopup = false
+					}, 300)
+				})
+			}
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.pickup-country {
+		/* #ifndef APP-NVUE */
+		display: flex;
+		/* #endif */
+		flex-direction: column;
+	}
+
+	.pickup-country-mask {
+		position: fixed;
+		bottom: 0;
+		top: 0;
+		left: 0;
+		right: 0;
+
+		transition-property: opacity;
+		transition-duration: 0.3s;
+		opacity: 0;
+		/* #ifndef APP-NVUE */
+		z-index: 999;
+		/* #endif */
+	}
+
+
+	.mask-ani {
+		transition-property: opacity;
+		transition-duration: 0.2s;
+	}
+
+	.simple-bottom-mask {
+		opacity: 1;
+	}
+
+	.simple-center-mask {
+		opacity: 1;
+	}
+
+	.pickup-country--fixed {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		transition-property: transform;
+		transition-duration: 0.3s;
+		transform: translateY(460rpx);
+		/* #ifndef APP-NVUE */
+		z-index: 999;
+		/* #endif */
+	}
+
+	.pickup-country-content {
+		background-color: #FFFFFF;
+	}
+
+	.simple-content-bottom {
+		bottom: 0;
+		left: 0;
+		right: 0;
+		transform: translateY(500rpx);
+	}
+
+	.content-ani {
+		transition-property: transform, opacity;
+		transition-duration: 0.2s;
+	}
+
+	.simple-bottom-content {
+		transform: translateY(0);
+	}
+
+	.simple-center-content {
+		transform: scale(1);
+		opacity: 1;
+	}
+
+	.pickup-country__header {
+		position: relative;
+		/* #ifndef APP-NVUE */
+		display: flex;
+		/* #endif */
+		flex-direction: row;
+		flex-wrap: nowrap;
+		justify-content: space-between;
+		border-bottom-color: #f2f2f2;
+		border-bottom-style: solid;
+		border-bottom-width: 1rpx;
+	}
+
+	.pickup-country--fixed-top {
+		/* #ifndef APP-NVUE */
+		display: flex;
+		/* #endif */
+		flex-direction: row;
+		justify-content: space-between;
+		border-top-color: $uni-border-color;
+		border-top-style: solid;
+		border-top-width: 1rpx;
+	}
+
+	.pickup-country__header-btn-box {
+		/* #ifndef APP-NVUE */
+		display: flex;
+		/* #endif */
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		height: 70rpx;
+	}
+
+	.pickup-country__header-text {
+		text-align: center;
+		font-size: $uni-font-size-base;
+		color: #1aad19;
+		line-height: 70rpx;
+		padding-left: 40rpx;
+		padding-right: 40rpx;
+	}
+
+	.pickup-country__box {
+		position: relative;
+	}
+
+	.pickup-country-view {
+		position: relative;
+		bottom: 0;
+		left: 0;
+		/* #ifndef APP-NVUE */
+		width: 100%;
+		/* #endif */
+		/* #ifdef APP-NVUE */
+		width: 750rpx;
+		/* #endif */
+		height: 408rpx;
+		background-color: rgba(255, 255, 255, 1);
+	}
+
+	.picker-item {
+		text-align: center;
+		line-height: 70rpx;
+		text-overflow: ellipsis;
+		font-size: 28rpx;
+	}
+</style>

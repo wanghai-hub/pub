@@ -1,0 +1,110 @@
+pipeline {
+  agent {
+    node {
+      label 'nodejs'
+    }
+  }
+
+    parameters {
+        choice(
+        description: '请你选择要进行哪种操作',
+        name: 'MODE',
+        choices: ['DeploymentRelease', 'MakeWarPack','MakeMirror']
+      )
+        string(
+        description: '应用模式：ALL;说明：Harbor的凭证ID;',
+        name: 'DOCKER_CREDENTIAL_ID',
+        defaultValue: 'docker-id1',
+    )
+        string(
+        description: '应用模式:DeploymentRelease&MakeMirror;说明:Harbor的地址',
+        name: 'REGISTRY',
+        defaultValue: '10.110.60.16',
+    )
+        string(
+        description: '应用模式:DeploymentRelease&MakeMirror;说明:Harbor的项目名称',
+        name: 'DOCKERHUB_NAMESPACE',
+        defaultValue: 'edu',
+    )
+        string(
+        description: '应用模式:DeploymentRelease&MakeMirror;说明:镜像名称',
+        name: 'IMAGE_NAME',
+        defaultValue: 'xgk-gz-frontend',
+    )
+        string(
+        description: '应用模式:DeploymentRelease&MakeMirror;说明:镜像TAG',
+        name: 'IMAGE_TAG',
+        defaultValue: '1.0.0-SNAPSHOT',
+    )
+        string(
+        description: '应用模式:DeploymentRelease&MakeMirror;说明:容器和pod开放端口号',
+        name: 'PORT1',
+        defaultValue: '80',
+    )
+        string(
+        description: '应用模式:DeploymentRelease;说明:kubeconfig凭证ID',
+        name: 'KUBECONFIG_CREDENTIAL_IDA',
+        defaultValue: 'kub-id1',
+    )
+        string(
+        description: '应用模式:DeploymentRelease;说明:kubeconfig凭证ID',
+        name: 'KUBECONFIG_CREDENTIAL_IDB',
+        defaultValue: 'kub-id2',
+    )
+        string(
+        description: '应用模式:DeploymentRelease;说明:kubeSphere项目名称',
+        name: 'APP_NAMESPACE',
+        defaultValue: 'xgk-gz-backend',
+    )
+        string(
+        description: '应用模式:DeploymentRelease;说明:pod和服务名称',
+        name: 'APP_NAME',
+        defaultValue: 'xgk-gz-frontend',
+    )
+        string(
+        description: '应用模式:DeploymentRelease;说明:volume名称1',
+        name: 'VOLUME_NAME1',
+        defaultValue: 'volume-xgk-gz-frontend1',
+    )
+
+    }
+
+    stages {
+
+
+      stage ('checkout scm') {
+            steps {
+                checkout(scm)
+            }
+        }
+          stage ('DeploymentRelease:build & push') {
+              when {
+                equals expected: 'DeploymentRelease',
+                actual: MODE
+              }
+              steps {
+                  container ('nodejs') {
+                      sh 'docker build -f cicd/Dockerfile -t $REGISTRY/$DOCKERHUB_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG .'
+                      withCredentials([usernamePassword(passwordVariable : 'DOCKER_PASSWORD' ,usernameVariable : 'DOCKER_USERNAME' ,credentialsId : "$DOCKER_CREDENTIAL_ID" ,)]) {
+                          sh 'echo "$DOCKER_PASSWORD" | docker login $REGISTRY -u "$DOCKER_USERNAME" --password-stdin'
+                          sh 'docker push  $REGISTRY/$DOCKERHUB_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG'
+                      }
+                  }
+              }
+          }
+
+        stage('DeploymentRelease:deploy') {
+            parallel{
+                stage('DeploymentRelease to dev'){
+                    when{
+                        equals expected: 'DeploymentRelease',
+                        actual: MODE
+                    }
+                    steps{
+                        kubernetesDeploy(configs: 'cicd/k8s-config-dev.yaml', enableConfigSubstitution: true, kubeconfigId: "$KUBECONFIG_CREDENTIAL_IDA")
+                    }
+                }
+            }
+        }
+    }
+}

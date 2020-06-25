@@ -1,0 +1,202 @@
+* {
+	margin: 0;
+	box-sizing: border-box;
+}
+a,a:hover {
+	text-decoration: none;
+}
+.clearfix {
+	clear: both;
+}
+.clearfix::after {
+	clear: both;
+    content: "";
+    display: block;
+    overflow: hidden;
+    height: 0;
+}
+.disflex {
+	display: flex;
+}
+.left {
+	float: left;
+}
+.right {
+	float: right;
+}
+.gray {
+	color: #888;
+}
+.gray-bg {
+	background-color: #eee;
+}
+.white-bg {
+	background-color: #fff;
+}
+.padding {
+	padding: 5px 10px;
+}
+.phone-bg {
+	background: #f6f6f6;
+}
+.page-wrap,
+.sub-wrap {
+	margin: 10px;
+}
+.page-wrap {
+	padding: 10px;
+	background-color: #fff;
+	border-radius: 10rpx;
+}
+.page-title {
+	height: 40px;
+	line-height: 40px;
+	font-size: 18px;
+	text-align: center;
+	background-color: #fff;
+}
+.page-title span.back {
+	padding-left: 10px;
+	cursor: pointer;
+	font-size: 20px;
+}
+.course-item-img {
+	position: relative;
+	float: left;
+	height: 230rpx;
+	width: 230rpx;
+	/* line-height: 230rpx; */
+	margin-top: 10rpx;
+	/* background-color: #eee; */
+	text-align: center;
+}
+.course-item-img img {
+	/* float: left; */
+	display: inline-block;
+	max-width: 230rpx;
+	max-height: 230rpx;
+	text-align: center;
+	vertical-align: middle;
+}
+.course-item-img i.freetag {
+	position: absolute;
+	left: 0;
+	top: 0;
+	display: block;
+	height: 40rpx;
+	width: 80rpx;
+	/* background: url(../static/img/free.png) no-repeat center; */
+}
+.course-item-ct {
+	margin-left: 250rpx;
+}
+.course-item-ct a.name,
+.course-item-ct span.author,
+.course-item-ct span.author-desc {
+	display: block;
+}
+.course-item-ct a.name {
+	color: #333;
+	font-size: 32rpx;
+	font-weight: 600;
+}
+.course-item-ct span.author,
+.course-item-ct span.author-desc {
+	font-size: 28rpx;
+}
+.course-item-ct span.author {
+	color: #555555;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.course-item-ct span.author-desc {
+	color: #777777;
+	display:block;
+	text-overflow: ellipsis;
+	overflow : hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	display: -moz-box;
+	-moz-line-clamp: 2;
+	-moz-box-orient: vertical;
+	display: -o-box;
+	-o-line-clamp: 2;
+	-o-box-orient: vertical;
+}
+.course-item-status {
+	height: 30px;
+	margin: 5px 0;
+}
+.course-item-status .status {
+	display: inline-block;
+	padding: 0 10px;
+	margin-right: 10px;
+	border: 1px solid #ddd;
+	color: #888;
+	border-radius: 5px;
+}
+.course-item-status .status.in {
+	border: 1px solid #ff0000;
+	color: #ff0000;
+}
+.course-item-tail {
+	border-top: 1px solid #ddd;
+	padding: 10px 0;
+}
+.course-item-tail a.iitbtn {
+	display: inline-block;
+	height: 30px;
+	line-height: 30px;
+	padding: 0 15px;
+	border-radius: 15px;
+	border: 1px solid #ff5a34;
+	text-decoration: none;
+	color: #ff5a34;
+}
+.course-item-tail a.iitbtn.disable {
+	color: #888;
+	border-color: #888;
+}
+
+uni-tabbar .uni-tabbar__icon {
+	width: 44rpx;
+	height: 44rpx;
+}
+uni-tabbar .uni-tabbar__icon img {
+	width: 100%;
+	height: auto;
+}
+/* 主讲人样式 */
+.speak {
+	width: 100%;
+	margin-bottom: 15rpx;
+}
+.speak-wrap .img {
+	display: inline-block;
+	width: 30rpx;
+	height:50rpx;
+	margin-right: 14rpx;
+}
+.speak-wrap .img>img {
+	max-width: 100%;
+	max-height: 100%;
+	margin-top: -4rpx;
+	vertical-align: middle;
+}
+.speak-wrap .img image {
+	margin-top: -4rpx;
+	vertical-align: middle;
+}
+.speak-wrap {
+	display: inline-block;
+	height:50rpx;
+	padding: 0 30rpx 0 20rpx;
+	background: url(static/img/speakerbg.png) no-repeat center center;
+	background-size:100% 100%;
+	color: #67261c;
+	font-size: 30rpx;
+	font-weight: 600;
+}

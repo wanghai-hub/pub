@@ -1,0 +1,150 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: $APP_NAME
+  namespace: $APP_NAMESPACE
+  labels:
+    app: $APP_NAME
+data:
+  nginx.conf: |
+    user  nginx;
+    worker_processes  1;
+
+    error_log  /var/log/nginx/error.log warn;
+    pid        /var/run/nginx.pid;
+
+
+    events {
+        worker_connections  1024;
+    }
+
+
+    http {
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+
+        log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                          '$status $body_bytes_sent "$http_referer" '
+                          '"$http_user_agent" "$http_x_forwarded_for"';
+
+        access_log  /var/log/nginx/access.log  main;
+
+        sendfile        on;
+        #tcp_nopush     on;
+
+        keepalive_timeout  65;
+
+        #gzip  on;
+
+        #include /etc/nginx/conf.d/*.conf;
+
+            server {
+                    listen 80;
+                    server_name  localhost;
+                    access_log  /var/log/nginx/host.access.log  main;
+                    error_log  /var/log/nginx/error1.log  error;
+                    location / {
+                            root   /usr/share/nginx/wwwroot/html/xgkpt;
+                            index  index.html index.htm;
+
+                    }
+
+                    location /xgkpt {
+                            alias  /usr/share/nginx/wwwroot/html;
+                            index  index.html index.htm;
+                            client_max_body_size    1000m;
+
+                    }
+                    location /xgk-gz {
+                            proxy_pass http://xgk-gz-backend.xgk-gz-backend/xgk-gz;
+                            proxy_redirect default ;
+                            proxy_set_header Host $http_host;
+                            proxy_set_header X-Real-IP $remote_addr;
+                            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    }
+            }
+    }
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kubesphere
+    component: $APP_NAME
+    tier: backend
+  name: $APP_NAME
+  namespace: $APP_NAMESPACE
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubesphere
+      component: $APP_NAME
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: kubesphere
+        component: $APP_NAME
+        tier: backend
+    spec:
+      volumes:
+        - name: $VOLUME_NAME1
+          configMap:
+            name: $APP_NAME
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+            defaultMode: 420
+      containers:
+        - image: $REGISTRY/$DOCKERHUB_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG
+          imagePullPolicy: Always
+          name: $APP_NAME
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "echo ${BUILD_NUMBER}"]
+          ports:
+            - name: port1
+              containerPort: $PORT1
+              protocol: TCP
+          volumeMounts:
+            - name: $VOLUME_NAME1
+              readOnly: true
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0%
+      maxSurge: 100%
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kubesphere
+    component: $APP_NAME
+  name: $APP_NAME
+  namespace: $APP_NAMESPACE
+spec:
+  ports:
+    - name: http1
+      port: $PORT1
+      protocol: TCP
+      targetPort: $PORT1
+  selector:
+    app: kubesphere
+    component: $APP_NAME
+    tier: backend
+  sessionAffinity: None
+  type: NodePort
